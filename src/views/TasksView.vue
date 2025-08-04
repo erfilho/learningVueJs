@@ -1,0 +1,83 @@
+<template>
+  <div
+    class="w-full h-dvh bg-gray-500 flex flex-col justify-center items-center"
+  >
+    <div
+      class="w-1/4 h-1/2 bg-gray-200 rounded-xl shadow-2xl p-4 flex flex-col items-center"
+    >
+      <h1 class="text-xl font-bold my-1">{{ title }}</h1>
+
+      <div class="flex flex-row w-full h-8 bg-gray-300 rounded-md gap-2 p-1">
+        <input
+          class="w-3/4 px-1"
+          v-model="newTask"
+          placeholder="Write a task!"
+        />
+        <button
+          class="bg-gray-50 w-1/4 rounded-md cursor-pointer"
+          @click="addTask"
+        >
+          Add task
+        </button>
+      </div>
+
+      <p v-if="tasks.length === 0">No tasks added.</p>
+
+      <ul class="list-none p-0 w-full">
+        <TaskItem
+          v-for="(task, index) in tasks"
+          :key="index"
+          :task="task"
+          @remove="removeTask(index)"
+          @update="saveTaskToStorage"
+        />
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+import TaskItem from "../components/TaskItem.vue";
+
+const STORAGE_KEY = "myTasks";
+
+export default {
+  components: { TaskItem },
+  data() {
+    return {
+      title: "My task list!",
+      newTask: "",
+      tasks: [],
+    };
+  },
+  methods: {
+    addTask() {
+      if (this.newTask.trim() !== "") {
+        this.tasks.push({ title: this.newTask, finalized: false });
+        this.newTask = "";
+        this.saveTaskToStorage();
+      }
+    },
+    removeTask(index) {
+      this.tasks.splice(index, 1);
+      this.saveTaskToStorage();
+    },
+    saveTaskToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.tasks));
+    },
+  },
+  mounted() {
+    const savedTasks = localStorage.getItem(STORAGE_KEY);
+    if (savedTasks) {
+      this.tasks = JSON.parse(savedTasks);
+    }
+  },
+};
+</script>
+
+<style>
+.finalized {
+  text-decoration: line-through;
+  color: gray;
+}
+</style>

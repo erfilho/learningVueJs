@@ -1,25 +1,29 @@
 <template>
   <li
-    class="mt-2 flex justify-between bg-gray-400 w-full p-1.5 rounded-sm flex-row items-center"
+    class="mt-2 flex justify-between bg-gray-300 w-full p-1.5 rounded-sm flex-row items-center"
   >
-    <input type="checkbox" v-model="task.finalized" class="w-1/6 h-4" />
+    <input
+      type="checkbox"
+      v-model="task.finalized"
+      class="w-1/12 h-4 cursor-pointer"
+    />
 
     <template v-if="editing">
       <input
         v-model="editedText"
         @keyup.enter="saveEdit"
         @blur="cancelEdit"
-        class="w-3/6 bg-red-200"
+        class="w-9/12 bg-red-200 rounded-md px-1"
       />
-      <button @mousedown="saveEdit" class="w-1/6 cursor-pointer">💾</button>
-      <button @click="cancelEdit" class="w-1/6">❌</button>
+      <button @mousedown="saveEdit" class="w-1/12 cursor-pointer">💾</button>
+      <button @click="cancelEdit" class="w-1/12 cursor-pointer">❌</button>
     </template>
     <template v-else>
-      <span :class="{ finalized: task.finalized }" class="w-3/6">
+      <span :class="{ finalized: task.finalized }" class="w-9/12 px-1">
         {{ task.title }}
       </span>
-      <button @click="startEdit" class="w-1/6">✏</button>
-      <button @click="$emit('remove')" class="w-1/6">❌</button>
+      <button @click="startEdit" class="w-1/12 cursor-pointer">✏</button>
+      <button @click="$emit('remove')" class="w-1/12 cursor-pointer">❌</button>
     </template>
   </li>
 </template>
@@ -50,6 +54,7 @@ export default {
         this.task.title = this.editedText.trim();
       }
       this.editing = false;
+      this.$emit("update");
     },
     cancelEdit() {
       this.editing = false;
