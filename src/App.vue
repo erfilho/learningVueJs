@@ -24,24 +24,23 @@
       <p v-if="tasks.length === 0">No tasks added.</p>
 
       <ul class="list-none p-0 w-full">
-        <li
+        <TaskItem
           v-for="(task, index) in tasks"
           :key="index"
-          class="mt-2 flex justify-between bg-gray-400 w-full p-1.5 rounded-sm flex-row items-center"
-        >
-          <input type="checkbox" v-model="task.finalized" class="w-1/6 h-4" />
-          <span :class="{ finalized: task.finalized }" class="w-4/6">{{
-            task.title
-          }}</span>
-          <button @click="removeTask(index)" class="w-1/6">❌</button>
-        </li>
+          :task="task"
+          @edit="editTask(index)"
+          @remove="removeTask(index)"
+        />
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+import TaskItem from "./components/TaskItem.vue";
+
 export default {
+  components: { TaskItem },
   data() {
     return {
       title: "My task list!",
@@ -54,6 +53,12 @@ export default {
       if (this.newTask.trim() !== "") {
         this.tasks.push({ title: this.newTask, finalized: false });
         this.newTask = "";
+      }
+    },
+    editTask(index) {
+      const newTitle = prompt("Edit this task: ", this.tasks[index].title);
+      if (newTitle !== null) {
+        this.tasks[index].title = newTitle;
       }
     },
     removeTask(index) {
