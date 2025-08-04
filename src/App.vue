@@ -28,7 +28,6 @@
           v-for="(task, index) in tasks"
           :key="index"
           :task="task"
-          @edit="editTask(index)"
           @remove="removeTask(index)"
         />
       </ul>
@@ -53,12 +52,6 @@ export default {
       if (this.newTask.trim() !== "") {
         this.tasks.push({ title: this.newTask, finalized: false });
         this.newTask = "";
-      }
-    },
-    editTask(index) {
-      const newTitle = prompt("Edit this task: ", this.tasks[index].title);
-      if (newTitle !== null) {
-        this.tasks[index].title = newTitle;
       }
     },
     removeTask(index) {
