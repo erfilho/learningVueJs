@@ -37,6 +37,7 @@
           class="w-3/4 px-1"
           v-model="newTask"
           placeholder="Write a task!"
+          @keydown.enter="addTask"
         />
         <button
           class="bg-gray-50 w-1/4 rounded-md cursor-pointer"
@@ -53,10 +54,10 @@
 
         <ul class="list-none p-0 w-full">
           <TaskItem
-            v-for="(task, index) in store.filteredTasks"
-            :key="index"
+            v-for="task in store.filteredTasks"
+            :key="task.id"
             :task="task"
-            @remove="removeTask(index)"
+            @remove="removeTask(task)"
           />
         </ul>
       </div>
@@ -83,8 +84,8 @@ function addTask() {
   }
 }
 
-function removeTask(index) {
-  store.removeTask(index);
+function removeTask(task) {
+  store.removeTaskById(task.id);
 }
 
 onMounted(() => {

@@ -7,10 +7,13 @@ export const useTasksStore = defineStore("tasks", {
   }),
   actions: {
     addTask(title) {
-      this.taskList.push({ title, finalized: false });
+      this.taskList.push({ id: crypto.randomUUID(), title, finalized: false });
     },
     removeTask(index) {
       this.taskList.splice(index, 1);
+    },
+    removeTaskById(id) {
+      this.taskList = this.taskList.filter((task) => task.id !== id);
     },
     editTask(index, newTitle) {
       this.taskList[index].title = newTitle;
