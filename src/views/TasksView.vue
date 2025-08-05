@@ -21,58 +21,54 @@
         </button>
       </div>
 
-      <p v-if="tasks.length === 0">No tasks added.</p>
+      <p v-if="store.taskList.length === 0">No tasks added.</p>
 
       <ul class="list-none p-0 w-full">
         <TaskItem
-          v-for="(task, index) in tasks"
+          v-for="(task, index) in store.taskList"
           :key="index"
           :task="task"
           @remove="removeTask(index)"
-          @update="saveTaskToStorage"
         />
       </ul>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref, watch } from "vue";
 import TaskItem from "../components/TaskItem.vue";
+import { useTasksStore } from "../stores/useTaskStore";
 
-const STORAGE_KEY = "myTasks";
+const title = "My tasks list!";
+const newTask = ref("");
+const store = useTasksStore();
 
-export default {
-  components: { TaskItem },
-  data() {
-    return {
-      title: "My task list!",
-      newTask: "",
-      tasks: [],
-    };
+function addTask() {
+  if (newTask.value.trim()) {
+    store.addTask(newTask.value);
+    newTask.value = "";
+  }
+}
+
+function removeTask(index) {
+  store.removeTask(index);
+}
+
+onMounted(() => {
+  const savedTasks = localStorage.getItem("myTasks");
+  if (savedTasks) {
+    store.loadTasks(JSON.stringify(savedTasks));
+  }
+});
+
+watch(
+  () => store.taskList,
+  (val) => {
+    localStorage.setItem("myTasks", JSON.stringify(val));
   },
-  methods: {
-    addTask() {
-      if (this.newTask.trim() !== "") {
-        this.tasks.push({ title: this.newTask, finalized: false });
-        this.newTask = "";
-        this.saveTaskToStorage();
-      }
-    },
-    removeTask(index) {
-      this.tasks.splice(index, 1);
-      this.saveTaskToStorage();
-    },
-    saveTaskToStorage() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.tasks));
-    },
-  },
-  mounted() {
-    const savedTasks = localStorage.getItem(STORAGE_KEY);
-    if (savedTasks) {
-      this.tasks = JSON.parse(savedTasks);
-    }
-  },
-};
+  { deep: true }
+);
 </script>
 
 <style>

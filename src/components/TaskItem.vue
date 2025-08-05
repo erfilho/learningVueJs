@@ -28,37 +28,33 @@
   </li>
 </template>
 
-<script>
-export default {
-  props: {
-    task: {
-      type: Object,
-      required: true,
-    },
-  },
+<script setup>
+import { ref } from "vue";
 
-  data() {
-    return {
-      editing: false,
-      editedText: "",
-    };
+const props = defineProps({
+  task: {
+    type: Object,
+    required: true,
   },
+});
 
-  methods: {
-    startEdit() {
-      this.editing = true;
-      this.editedText = this.task.title;
-    },
-    saveEdit() {
-      if (this.editedText.trim() !== "") {
-        this.task.title = this.editedText.trim();
-      }
-      this.editing = false;
-      this.$emit("update");
-    },
-    cancelEdit() {
-      this.editing = false;
-    },
-  },
-};
+const emit = defineEmits(["remove"]);
+const editing = ref(false);
+const editedText = ref("");
+
+function startEdit() {
+  editing.value = true;
+  editedText.value = props.task.title;
+}
+
+function saveEdit() {
+  if (editedText.value.trim()) {
+    props.task.title = editedText.value.trim();
+  }
+  editing.value = false;
+}
+
+function cancelEdit() {
+  editing.value = false;
+}
 </script>
