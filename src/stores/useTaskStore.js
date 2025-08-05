@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useTasksStore = defineStore("tasks", {
   state: () => ({
     taskList: [],
+    filter: "all", // 'all' || 'completed' || 'pending'
   }),
   actions: {
     addTask(title) {
@@ -19,6 +20,22 @@ export const useTasksStore = defineStore("tasks", {
     },
     loadTasks(savedTasks) {
       this.taskList = savedTasks;
+    },
+    setFilter(newFilter) {
+      this.filter = newFilter;
+    },
+  },
+  getters: {
+    filteredTasks(state) {
+      if (state.filter === "completed") {
+        return state.taskList.filter((t) => t.finalized);
+      } else if (state.filter === "pending") {
+        return state.taskList.filter((t) => !t.finalized);
+      }
+      return state.taskList;
+    },
+    completedCount(state) {
+      return state.taskList.filter((t) => t.finalized).length;
     },
   },
 });
