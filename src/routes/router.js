@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import AboutView from "./views/AboutView.vue";
-import TasksView from "./views/TasksView.vue";
+import AboutView from "../views/AboutView.vue";
+import TasksView from "../views/TasksView.vue";
 
 const routes = [
   { path: "/", component: TasksView },

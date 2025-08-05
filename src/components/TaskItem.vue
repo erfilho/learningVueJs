@@ -4,15 +4,17 @@
   >
     <input
       type="checkbox"
-      v-model="task.finalized"
+      :checked="task.finalized"
+      @change="$emit('toggle', task)"
       class="w-1/12 h-4 cursor-pointer"
     />
 
     <template v-if="editing">
       <input
         v-model="editedText"
-        @keyup.enter="saveEdit"
-        @blur="cancelEdit"
+        @keyup.enter="saveEdit(task)"
+        @blur="saveEdit"
+        ref="editInput"
         class="w-9/12 bg-red-200 rounded-md px-1"
       />
       <button @mousedown="saveEdit" class="w-1/12 cursor-pointer">💾</button>
@@ -23,13 +25,15 @@
         {{ task.title }}
       </span>
       <button @click="startEdit" class="w-1/12 cursor-pointer">✏</button>
-      <button @click="$emit('remove')" class="w-1/12 cursor-pointer">❌</button>
+      <button @click="$emit('remove', task.id)" class="w-1/12 cursor-pointer">
+        ❌
+      </button>
     </template>
   </li>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
 
 const props = defineProps({
   task: {
@@ -38,20 +42,25 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["remove"]);
+const emit = defineEmits(["remove", "toggle", "edit"]);
 const editing = ref(false);
 const editedText = ref("");
+const editInput = ref(null);
 
 function startEdit() {
   editing.value = true;
   editedText.value = props.task.title;
+  nextTick(() => {
+    editInput.value.focus();
+  });
 }
 
 function saveEdit() {
-  if (editedText.value.trim()) {
-    props.task.title = editedText.value.trim();
-  }
+  if (!editedText.value.trim()) return cancelEdit();
+
   editing.value = false;
+
+  emit("edit", { id: props.task.id, title: editedText.value.trim() });
 }
 
 function cancelEdit() {
